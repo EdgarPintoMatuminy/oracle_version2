@@ -1,0 +1,501 @@
+function getTranslation(questionNum,type){
+  const T={
+    1:{q:"Asistente de config - crear dominio con clúster de 3 servidores y proxy HTTP. ¿Qué tres pasos?",o:["Crear un clúster","Instalar Oracle HTTP Server","Crear servidor Coherence","Crear cuatro servidores administrados","Asignar tres servidores al clúster","Especificar puerto proxy para servidor admin"]},
+    2:{q:"Usar BD para almacenar logs de transacciones WebLogic. ¿Qué dos pasos?",o:["Seleccionar 'JDBC' como tipo de almacén en Servicios del servidor","Seleccionar 'Deshabilitar Almacén Predeterminado'","Crear origen de datos no-XA para log de transacciones","Crear origen de datos XA para log de transacciones"]},
+    3:{q:"¿Qué tipo de persistencia de sesión NO es válido?",o:["async_replicated","async_jdbc","replicado","async_memory","cookie","archivo","replicated_if_clustered"]},
+    4:{q:"Admin dice que no necesita backup en máquina con solo servidores administrados. ¿Mejor explicación?",o:["Verdadero: archivos se recrean con pack/unpack","Verdadero (excepción): si usa LDAP integrado","Verdadero (excepción): para apps desplegadas en servidor admin","Falso: necesita backup con comandos del SO"]},
+    5:{q:"¿Qué afirmación es verdadera sobre detener Node Manager?",o:["Si detiene NM, los servidores que inició también se detienen","Puede eliminar el proceso NM con comandos del SO","Usar stopNodeManager.sh para detención elegante","Usar consola admin, seleccionar máquina y clic en Detener","Admin entra en modo ADMIN si no se comunica con NM","Servidores administrados entran en modo ADMIN si no se comunican con NM"]},
+    6:{q:"Origen de datos no-XA en transacciones globales con EJB y One-phase commit. ¿Por qué incorrecto?",o:["Debe elegir driver XA para transacciones globales","One Phase Commit siempre devuelve 'listo', puede tener errores heurísticos","One-Phase Commit procesa último; si EJB debe ir último, no se puede usar","One-Phase Commit solo permite este origen en transacción global, no con EJB"]},
+    7:{q:"Clúster dinámico - distribuir servidores entre máquinas. ¿Tres configuraciones soportadas?",o:["Usar una sola máquina","Usar todas las máquinas en subred","Usar todas las máquinas del dominio","Usar porcentaje de máquinas del dominio","Usar máquinas cuyo nombre coincida con expresión"]},
+    8:{q:"¿Qué acción hace backup automático de configuración al activar cambios?",o:["Usar backup='true' en activate() de WLST","Consola: seleccionar 'Seguir cambios de configuración'","Consola: seleccionar 'Archivo de configuración habilitado'","Config automática crea backups al arrancar, no al activar"]},
+    9:{q:"¿Mejor solución para manejar cargas crecientes que superan la capacidad?",o:["Añadir tercer clúster y distribuir instancias","Modificar balanceo de carga del proxy a basado en peso","Configurar clústeres dinámicos con instancias anticipadas","Ajustar gestores de trabajo","Reemplazar balanceador software por hardware"]},
+    10:{q:"¿Cómo deshabilitar ayuda en línea para todos los admins?",o:["No se puede deshabilitar","Solo se puede hacer por usuario","Iniciar sesión en consola y deshabilitar ayuda en línea","Usar WLST con EnableInlineHelp(false)"]},
+    11:{q:"Instalar WebLogic con instalador JAR en modo silencioso. ¿Dos formas de crear archivo de respuesta?",o:["Instalar gráficamente, guardar archivo de respuesta","Usar archivo de respuesta de ejemplo de la documentación","Ejecutar Repository Creation Utility","No se requiere archivo de respuesta","El instalador JAR no tiene modo silencioso"]},
+    12:{q:"Dominio con 30 servidores. ¿Forma más rápida de identificar servidores en estado Failed?",o:["Usar botón Filter en pestaña Monitoring > Health del dominio","Ver pestaña Monitoring > Health de cada servidor","Escribir script WLST personalizado","Capturar snapshot de diagnóstico"]},
+    13:{q:"Config Java Node Manager con script de parada, reinicio en crash, SSL y comprobación cada segundo. ¿Config correcta?",o:["StopScriptEnabled=true, CrashRestartEnabled=true, SecureListener=true, StateCheckInterval=1","StopScriptEnabled=true, CrashRecoveryEnabled=true, SecureListener=SSL, StateCheckInterval=1000","StopScriptEnabled=true, CrashRestartEnabled=true, SecureListener=true, StateCheckInterval=1000","StopScript=true, CrashRecoveryEnabled=true, SecureListener=true, StateCheckInterval=1000","StopScriptEnabled=true, CrashRecoveryEnabled=true, SecureListener=true, StateCheckInterval=1000"]},
+    14:{q:"¿Tres afirmaciones verdaderas sobre clústeres WebLogic?",o:["Los clústeres proporcionan failover transparente","Apps EJB pueden dirigirse a todo el clúster","Todos los miembros deben vincularse al mismo puerto","Los miembros replican datos mediante heartbeats","Los miembros pueden estar en múltiples dominios","Las apps web requieren proxy en el clúster"]},
+    15:{q:"WLDF con Dye Injection. ¿Dónde encontrar el ID de contexto diagnóstico?",o:["Necesitas Events Data Archive","Necesitas Harvested Data Archive","Necesitas el log del dominio","Puedes buscar el ID en el log del servidor","Necesitas traducir el ID de contexto a ID de transacción"]},
+    16:{q:"Desplegar inventory.war en estado 'Prepared'. Probar antes de usuarios. ¿Qué host:port usar?",o:["Host y puerto de managed1","Host y puerto del Admin Server","Host y puerto de administración de managed1","Host y puerto de administración del Admin Server"]},
+    17:{q:"Crear clúster con consola admin. ¿Dos afirmaciones verdaderas?",o:["Todos los servidores deben crearse antes del clúster","Hay que elegir modo de mensajería del clúster","Un clúster no dinámico puede cambiar a dinámico","Una vez creado, no se puede cambiar el modo de mensajería","La consola no permite migrar manualmente servicios singleton"]},
+    18:{q:"Servidor administrado lanza OutOfMemory. ¿Cómo guardar heap dump en D:\\hprof-dumps\\?",o:["-XX:+DumpHeapOnOutOfMemory -XX:DumpPath=D:\\hprof-dumps","-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=D:\\hprof-dumps","-XX:+DumpHeapOnOutOfMemoryError -XX:HeapPath=D:\\hprof-dump","-XX:+HeapDumpOnOutOfMemory -XX:HeapDumpPath=D:\\hprof-dumps","-XX:+HeapDumpOnOutOfMemoryError -XX:DumpPath=D:\\hprof-dumps","-XX:+HeapDumpOnOutOfMemoryException -XX:HeapDumpPath=D:\\hprof-dumps"]},
+    19:{q:"Consola admin monitorizando recurso. ¿Tres técnicas para personalizar la salida?",o:["Ordenar filas por columna específica","Limitar número de filas mostradas","Cambiar orden de columnas","Ver filas de rango de tiempo específico","Combinar múltiples columnas"]},
+    20:{q:"Empresa con objetos COM. ¿Qué artefacto WebLogic ayuda a usarlos?",o:["Messaging Bridge","IDL Mapper","jCOM","XMLRegistry","COM2Java"]},
+    21:{q:"Origen de datos JDBC genérico con red poco fiable. ¿Dos atributos para evitar fallos?",o:["Statement Cache Type","Pool Reserve Mode","Test Table Name","Test Connection Mode","Test Connections on Reserve"]},
+    22:{q:"¿Tres tareas que puede realizar Node Manager?",o:["Iniciar un servidor","Definir nuevo servidor","Hospedar consola de Node Manager","Reiniciar automáticamente servidor fallido","Matar aplicación fallida","Matar proceso de servidor que no se apagó correctamente"]},
+    23:{q:"Creaste clase de apagado MyClass. ¿Qué es verdadero?",o:["Puede especificarse en el Asistente de Configuración","Debe estar en el classpath de WebLogic Server","Solo puede dirigirse a una instancia de servidor","No debe tener método main"]},
+    24:{q:"Clúster no dinámico existente. ¿Dos formas de crear nuevo servidor?",o:["Usar Asistente de Configuración","Usar pack/unpack para copiar servidor existente","Usar Consola para añadir canal de red al clúster","Usar Consola para clonar servidor existente del clúster"]},
+    25:{q:"Poner app web offline. ¿Tres opciones soportadas al detener app?",o:["Terminar sesiones HTTP inmediatamente","Terminar sesiones HTTP tras 3 minutos","Mover sesiones HTTP a base de datos","Esperar a que las sesiones HTTP expiren","Permitir nuevas peticiones solo por puerto admin","Mover peticiones en curso a otro servidor"]},
+    26:{q:"Login en app web. 'Acceso Denegado' al publicar. ¿Dos afirmaciones verdaderas?",o:["App no asociada con roles de seguridad","Reinos de seguridad no configurados","Tu cuenta de usuario expiró","Tu cuenta existe en el proveedor de autenticación","Política de seguridad adjunta a la URL 'publicar'"]},
+    27:{q:"Analizar sesiones HTTP y heap juntos. ¿Tres pasos?",o:["Crear vista personalizada","Iniciar vista JVM Runtime","Arrastrar cada métrica a gráficas en la misma vista","Acceder al Dashboard de Monitorización","Hacer clic en pestaña Monitoring de la aplicación"]},
+    28:{q:"App falla: origen de datos JDBC no encontrado. ¿Dos pasos para verificar disponibilidad?",o:["Lanzar utilidad JDBCDiagnostics","Verificar atributo Dependencies","Ver árbol JNDI del servidor objetivo","Verificar que app y origen de datos tienen el mismo objetivo"]},
+    29:{q:"¿Tres afirmaciones verdaderas sobre comportamiento de proxy plugins?",o:["El proxy ancla al cliente al servidor si se crea cookie de sesión","El proxy hace failover si expira la conexión","El proxy distribuye peticiones según CPU","El proxy aprende dinámicamente las ubicaciones del clúster","El proxy siempre usa SSL","El proxy replica datos de sesión"]},
+    30:{q:"¿Cuándo se crea el directorio de managed1?",o:["Cuando managed1 se define en el Asistente","Cuando se crea el dominio","Cuando el Admin Server arranca por primera vez","Cuando managed1 arranca por primera vez"]},
+    31:{q:"¿Dos métricas para monitorizar unicast en clúster?",o:["Groups","Master","Backup Server","Session Replicas","Local Group Leader"]},
+    32:{q:"Arranque falla: dirección ya en uso. ¿Dos métodos para identificar qué está escuchando?",o:["pmap lista procesos con puerto","lsof en UNIX informa sobre proceso en IP:puerto","netstat informa sobre proceso vinculado a IP:puerto","pstat da estadísticas detalladas","PortInfo en Linux genera alerta"]},
+    33:{q:"Clúster dinámico. Admin de red requiere que todos usen mycompany.com. ¿Qué acción?",o:["Usar ${macro} en dirección de escucha de la plantilla","Asignar cada servidor a máquina separada","Crear múltiples plantillas","Actualizar prefijo de dirección de escucha del clúster"]},
+    34:{q:"Script startWebLogic.sh en carpeta raíz. ¿Qué hace?",o:["Inicia una máquina","Inicia Node Manager","Inicia servidor administrado","Llama a startWebLogic.sh en bin del dominio","Llama a startManagedWebLogic.sh"]},
+    35:{q:"Múltiples canales de red. Combinación única de dos elementos. ¿Cuáles?",o:["Tunneling habilitado","Dirección de escucha","Puerto de escucha","Salida habilitada","Peso del canal"]},
+    36:{q:"¿Dos razones para definir máquinas?",o:["La máquina puede ser proxy","La definición de máquina es necesaria para Node Manager","Para referenciar instancia hay que conocer máquina y puerto","La máquina es unidad organizativa obligatoria","WebLogic usa asignaciones para replicación de sesión","El peso del clúster de la máquina lo usan los balanceadores"]},
+    37:{q:"Quieres transacciones recuperables cuando servidor no clusterizado falla. ¿Qué es verdadero?",o:["No es posible. Debes usar almacén JDBC","No es posible. Debes usar servidores clusterizados","Común, la configuración por defecto funciona","Antes del crash, actualizar ruta a almacenamiento compartido","Después del crash, obtener copia del admin server"]},
+    38:{q:"Escalar clúster. ¿Dos cambios obligatorios?",o:["Crear plan de despliegue","Crear nueva máquina","Crear nuevo servidor","Añadir servidor al clúster","Añadir servidor a máquina","Añadir clúster a máquina"]},
+    39:{q:"¿Dos afirmaciones verdaderas sobre actualizar a 12c?",o:["Para usar el Asistente, la versión actual debe ser 9.0+","El Asistente de Actualización ya no está en 12.1.2","Después del asistente, reaplicar personalizaciones de scripts","Hay que actualizar archivos admin"]},
+    40:{q:"Dominio actualizado de 10.3.6 a 12.1.12. ¿Modo de Node Manager tras la actualización?",o:["Sin cambios, funciona igual","En modo 'por máquina', no se necesita nada","En modo 'por dominio', requiere pasos manuales para volver a 'por máquina'","El modo puede seleccionarse en el Asistente"]},
+    41:{q:"¿Tres afirmaciones sobre parchear usando OPatch?",o:["Cada parche tiene readme con instrucciones","Se puede usar OPatch para ver parches aplicados","OPatch es GUI, requiere gestor de ventanas","OPatch requiere JDK","Después de instalar, descargar OPatch","Cada ZIP viene con OPatch"]},
+    42:{q:"Configurar RDBMS Security Store. ¿Tres acciones posibles?",o:["Crear tablas en el almacén","Ejecutar scripts SQL en directorio lib","Poblar tablas con usuarios LDAP externos","Probar conexión a base de datos","Asignar tablespace"]},
+    43:{q:"GridLink para RAC con FCF. ¿Dos afirmaciones verdaderas?",o:["Oracle Notification notifica cambios en RAC","FCF es rápido, los timeouts son muy bajos","FCF hace polling y pruebas","FCF requiere servidor de base de datos en GridLink","Se puede usar cualquier driver Oracle Thin"]},
+    44:{q:"Usar consola para iniciar servidor administrado. ¿Tres condiciones necesarias?",o:["En config, servidor asignado a máquina","Node Manager en máquina del admin","Node Manager en máquina del servidor administrado","Admin usa SSL unidireccional con Node Manager","En config, Node Manager configurado para la máquina","Java Node Manager configurado"]},
+    45:{q:"Servidor de producción necesita certificados SSL reales. ¿Qué herramienta usar?",o:["keytool de Java","openssl","Consola de Administración WebLogic","Oracle Certificate Manager","Herramienta SSL de terceros"]},
+    46:{q:"¿Dos afirmaciones verdaderas sobre despliegue staged vs. nostage?",o:["En staged, archivos se copian a cada servidor objetivo","En nostage, archivos se copian a cada servidor objetivo","Staged es el predeterminado","Nostage requiere almacenamiento compartido","En staged, el admin server mantiene la copia maestra"]},
+    47:{q:"Pool de conexiones lleno y llega nueva petición. ¿Qué ocurre?",o:["La petición falla inmediatamente","La petición espera hasta que haya conexión disponible o expire timeout","Se crea nueva conexión aunque supere el máximo","La petición se redirige a otro origen de datos","Se activa circuit breaker automáticamente"]},
+    48:{q:"¿Qué tipo de proveedor configurar para LDAP externo?",o:["DefaultAuthenticator","LDAPAuthenticator","ActiveDirectoryAuthenticator","OracleInternetDirectory","CustomLDAPAuthenticator"]},
+    49:{q:"¿Qué herramienta captura datos de diagnóstico sin reiniciar el servidor?",o:["WLDF (WebLogic Diagnostic Framework)","JRockit Flight Recorder","Java Mission Control","VisualVM","JConsole"]},
+    50:{q:"Quieres desplegar app sin interrumpir usuarios actuales. ¿Qué característica usar?",o:["Blue-green deployment","Production Redeployment","Parallel deployment","Rolling restart","Zero-downtime deployment"]},
+    51:{q:"¿Dónde se almacena la configuración de seguridad del dominio?",o:["En config.xml del dominio","En el servidor LDAP integrado","En base de datos externa","En archivo security.xml","En el servidor admin únicamente"]},
+    52:{q:"¿Qué ocurre cuando Node Manager pierde conexión con el Admin Server?",o:["Node Manager se detiene inmediatamente","NM continúa monitorizando y gestionando servidores locales","Todos los servidores administrados se detienen","NM intenta reconectar indefinidamente","NM entra en modo de solo lectura"]},
+    53:{q:"¿Diferencia entre origen de datos XA y no-XA?",o:["XA soporta transacciones distribuidas, no-XA no","No-XA es más rápido para transacciones simples","XA requiere driver especial de Oracle","No-XA no soporta pool de conexiones","XA solo funciona con Oracle Database"]},
+    54:{q:"¿Cómo se configura SSL en WebLogic Server?",o:["Solo mediante archivos de configuración XML","Mediante Consola de Administración o WLST","Requiere reinicio completo del dominio","Solo durante la instalación inicial","Solo mediante el Asistente de Configuración"]},
+    55:{q:"Clúster WebLogic. ¿Cómo se elige el servidor primario para replicación de sesión?",o:["Por número de sesiones activas","Por carga de CPU","Por orden alfabético del nombre","Aleatoriamente al crear la sesión","Por configuración manual del admin"]},
+    56:{q:"¿Qué es un plan de despliegue en WebLogic?",o:["Archivo que describe pasos de instalación","Archivo XML que modifica descriptores de despliegue sin cambiar la app","Configuración de rollback para despliegues fallidos","Script WLST para automatizar despliegues","Documento de planificación de capacidad"]},
+    57:{q:"¿Qué archivo de configuración principal contiene la topología del dominio?",o:["domain.xml","weblogic.xml","config.xml","topology.xml","server.xml"]},
+    58:{q:"¿Cuándo es necesario usar Node Manager?",o:["Siempre que se use WebLogic","Solo en entornos de producción","Cuando se necesita iniciar/parar servidores remotamente o reinicio automático","Solo cuando hay múltiples máquinas","Solo en modo clúster"]},
+    59:{q:"¿Qué es un JDBC Store en WebLogic?",o:["Tipo de origen de datos para aplicaciones","Almacén persistente que usa BD para guardar mensajes JMS o logs de transacciones","Cache de consultas SQL","Pool de conexiones especializado","Tipo de origen de datos GridLink"]},
+    60:{q:"¿Cómo se configuran roles de seguridad en WebLogic?",o:["Solo en archivos de despliegue","Solo en la Consola de Administración","En archivos de despliegue, Consola Admin o WLST","Solo durante el despliegue","En el archivo config.xml del dominio"]},
+    61:{q:"¿Qué es el modo 'Admin' de un servidor WebLogic?",o:["Modo donde solo el admin puede iniciar sesión","Modo donde el servidor acepta solo peticiones administrativas","Modo de mantenimiento con funcionalidad reducida","Estado previo al inicio completo","Modo de depuración con logging extra"]},
+    62:{q:"¿Qué es la migración de servicios singleton en un clúster?",o:["Mover una app de un servidor a otro","Trasladar automáticamente un servicio único de servidor fallido a otro disponible","Migrar configuración entre dominios","Copiar datos de sesión entre servidores","Actualizar un servidor sin interrupciones"]},
+    63:{q:"¿Diferencia entre Java Node Manager y Script Node Manager?",o:["Java NM es más rápido","Script NM usa scripts del SO; Java NM es proceso Java independiente más fiable","Java NM requiere JDK separado","Script NM solo funciona en Linux","Java NM solo funciona en Windows"]},
+    64:{q:"¿Qué es el Configuration Archive en WebLogic?",o:["Backup manual del dominio","Historial automático de cambios de configuración almacenado en ZIP","Exportación del dominio para migración","Log de auditoría de cambios","Snapshot de rendimiento del dominio"]},
+    65:{q:"¿Qué es Multi Data Source en WebLogic?",o:["Varios orígenes de datos en pool único para failover o balanceo de carga","Origen de datos con múltiples conexiones simultáneas","Origen de datos que conecta a múltiples schemas","Configuración JDBC para RAC de Oracle","Agrupación de orígenes de datos por tema"]},
+    66:{q:"¿Cómo se implementa Single Sign-On (SSO) en WebLogic?",o:["Configurando múltiples reinos de seguridad","Usando proveedor de identidad SAML o Oracle Access Manager","Compartiendo cookies entre aplicaciones","Solo disponible con Oracle Identity Management","Configurando LDAP compartido entre dominios"]},
+    67:{q:"¿Qué es el heartbeat en un clúster WebLogic?",o:["Mensaje periódico entre miembros para detectar fallos y mantener membresía","Métrica de rendimiento del servidor","Ping de comprobación de conectividad","Log de estado del clúster","Señal de sincronización de configuración"]},
+    68:{q:"¿Diferencia entre despliegue en clúster y en servidor individual?",o:["El despliegue en clúster requiere plan de despliegue","El clúster distribuye app a todos los miembros automáticamente","El despliegue individual es más fiable","No hay diferencia funcional","El clúster requiere reinicio para nuevos despliegues"]},
+    69:{q:"¿Qué herramienta se usa para empaquetar y transferir dominios entre máquinas?",o:["zip/tar del SO","pack y unpack de WebLogic","Configuration Wizard","WLST con comandos export/import","Oracle Enterprise Manager"]},
+    70:{q:"¿Cuándo se usa modo 'per-domain' de Node Manager vs 'per-machine'?",o:["Per-domain es más seguro","Per-domain gestiona múltiples dominios con un NM; per-machine gestiona todos los dominios de una máquina","Per-machine es la configuración por defecto en 12c","No hay diferencia práctica","Per-domain requiere más recursos"]},
+    71:{q:"¿Qué es el Statement Cache en un origen de datos JDBC?",o:["Cache de resultados de consultas SQL","Cache de sentencias SQL preparadas para mejorar rendimiento","Buffer de conexiones pendientes","Log de sentencias SQL ejecutadas","Pool de transacciones activas"]},
+    72:{q:"¿Qué es un Security Realm en WebLogic?",o:["Zona de red protegida","Contenedor de proveedores de seguridad que gestionan autenticación y autorización","Certificado SSL del servidor","Política de seguridad del dominio","Grupo de usuarios con mismos permisos"]},
+    73:{q:"¿Cómo se actualizan apps en producción sin downtime?",o:["Reiniciando el clúster completo","Usando Production Redeployment con versiones de aplicación","Deteniendo y reiniciando cada servidor individualmente","Solo es posible con downtime planificado","Usando el modo nostage automáticamente"]},
+    74:{q:"¿Qué es la replicación de sesión en memoria en un clúster?",o:["Almacenar sesiones en base de datos compartida","Copiar datos de sesión HTTP a otro servidor del clúster para failover","Sincronizar sesiones entre dominios","Cache distribuido de sesiones","Backup periódico de sesiones a disco"]},
+    75:{q:"¿Qué contiene el archivo boot.properties?",o:["Configuración de arranque del JVM","Credenciales cifradas para arranque automático del servidor","Parámetros de red del servidor","Lista de aplicaciones a desplegar al inicio","Configuración de Node Manager"]},
+    76:{q:"¿Qué ocurre si Node Manager no está disponible al iniciar servidor administrado?",o:["El servidor no puede iniciarse","Se puede iniciar manualmente con startManagedWebLogic.sh","El Admin Server intenta iniciarlo directamente","El servidor se inicia en modo degradado","Solo se puede iniciar si hay otro NM disponible"]},
+    77:{q:"¿Qué es el Connection Pool en un origen de datos JDBC?",o:["Lista de consultas SQL precargadas","Conjunto de conexiones de BD mantenidas y reutilizadas para mejorar rendimiento","Buffer de transacciones pendientes","Cache de metadatos de tablas","Conjunto de credenciales de base de datos"]},
+    78:{q:"¿Qué es un proveedor de autorización en WebLogic?",o:["Sistema que autentica usuarios","Sistema que determina qué recursos puede acceder un usuario autenticado","Proveedor de certificados SSL","Sistema de auditoría de accesos","Gestor de sesiones de usuario"]},
+    79:{q:"¿Qué significa que una app esté en estado 'Prepared' en WebLogic?",o:["La app está lista para usuarios","La app está desplegada pero no activada; solo acepta peticiones administrativas","La app está en proceso de despliegue","La app tiene errores de validación","La app está esperando recursos"]},
+    80:{q:"¿Qué protocolo usa WebLogic para comunicación entre miembros del clúster?",o:["HTTP/HTTPS","T3/T3S (protocolo propietario Oracle)","RMI sobre IIOP","UDP multicast","TCP directo entre pares"]},
+    81:{q:"¿Qué es el Administration Port en WebLogic?",o:["Puerto del Admin Server para gestionar el dominio","Puerto SSL separado para tráfico administrativo exclusivo","Puerto de Node Manager","Puerto de comunicación entre servidores del clúster","Puerto de la consola de administración"]},
+    82:{q:"¿Diferencia entre reiniciar servidor con NM vs. con script?",o:["No hay diferencia","NM puede reiniciar automáticamente tras crash y monitoriza el proceso; el script es manual","El script es más rápido","NM requiere más configuración pero es menos fiable","El script puede reiniciar remotamente sin NM"]},
+    83:{q:"¿Qué es el Inactive Connection Timeout en un pool JDBC?",o:["Tiempo máximo de espera para obtener conexión","Tiempo tras el cual una conexión inactiva (leaked) se cierra","Tiempo de expiración de transacciones","Tiempo de reconnect tras fallo de BD","Intervalo de prueba de conexiones"]},
+    84:{q:"¿Cómo se configuran políticas de seguridad para URLs en WebLogic?",o:["Solo en web.xml","En web.xml, weblogic.xml o mediante la Consola","Solo mediante la Consola","Solo en deployment plan","En config.xml del dominio"]},
+    85:{q:"¿Qué es el modo de despliegue 'external_stage'?",o:["Despliegue desde servidor externo","El admin copia archivos al stage; el servidor los usa desde allí sin copiarlos","Despliegue desde repositorio externo","Modo para despliegues entre dominios","Despliegue con validación externa previa"]},
+    86:{q:"¿Qué es el Cluster Messaging y cuándo elegir unicast vs. multicast?",o:["Comunicación entre servidores; multicast es más fácil, unicast es el predeterminado en 10.3.6+","Protocolo de replicación de sesiones; son idénticos","Sistema de colas JMS del clúster; multicast requiere hardware especial","Sincronización de configuración; unicast solo funciona en LAN","Mensajería entre aplicaciones; multicast es obligatorio en producción"]},
+    87:{q:"¿Qué son los Work Managers en WebLogic?",o:["Gestores de tareas programadas","Mecanismo para priorizar y gestionar threads de trabajo según reglas de negocio","Administradores de dominios","Gestores de pool de conexiones","Sistema de monitorización de carga"]},
+    88:{q:"¿Para qué sirve el archivo nodemanager.properties?",o:["Configurar propiedades del servidor administrado","Configurar el comportamiento de Node Manager: puertos, SSL, scripts, timeouts","Definir la topología del dominio","Configurar el Admin Server","Especificar ubicación de logs"]},
+    89:{q:"¿Qué es el Test Connections on Reserve en un pool JDBC?",o:["Prueba todas las conexiones al arrancar","Prueba la conexión antes de dársela a la aplicación para asegurar que es válida","Reserva conexiones para pruebas de carga","Monitoriza conexiones en segundo plano","Prueba automática tras fallo de base de datos"]},
+    90:{q:"¿Dos ventajas de SCAN al configurar GridLink?",o:["Patrón FCF que permite detección rápida de fallos","Se usa RLCB más sofisticado; sin SCAN revierte a round-robin","SCAN requerido para GridLink con driver XA","URL de base de datos más corta: un SCAN vs host:puerto por nodo RAC","Config del origen no necesita actualizarse al añadir nodos RAC"]},
+    91:{q:"Apps accederán a clúster de BDs redundantes (proveedor no Oracle). ¿Qué tipo de origen de datos?",o:["Origen de datos genérico","Origen de datos multi","Origen de datos GridLink","Origen de datos paralelo"]},
+    92:{q:"¿Dos formas de iniciar Java Node Manager en Linux?",o:["Usar script startNodeManager.sh","Usar consola, seleccionar máquina y clic en Start","Hacer que NM arranque como daemon al inicio","Usar Oracle OPMN","Establecer entorno y ejecutar JVM con nodemanager.RunTime"]},
+    93:{q:"App envía SQL, hoy muy lenta. Thread dump muestra operaciones de socket. ¿Suposición inicial?",o:["Capacidad máxima alcanzada","Datos de respuesta más grandes que buffer, aumentar buffer","Actividad en la BD, consultar al DBA","Conexión del datasource con leak","Firewall bloqueando","JDBC de Oracle corrupto, reinstalar"]},
+    94:{q:"Fragmento: <persistent-store-type>replicated</persistent-store-type>. ¿De qué archivo?",o:["weblogic-application.xml","session.xml","web.xml","config.xml","weblogic.xml"]},
+    95:{q:"Admin caído. Servidor administrado no arranca con script. ¿Por qué?",o:["El servidor tiene deshabilitado el modo de Independencia del Servidor Administrado","Los servidores administrados siempre contactan al admin para última configuración","El servidor debe ser parte de clúster y el master está caído","El servidor debe residir en la misma máquina que el admin","El dominio usa LDAP integrado, el servidor no puede obtener actualizaciones"]},
+    96:{q:"Java Node Manager no puede iniciar myserver. boot.properties corrupto. ¿Dónde está el archivo?",o:["Bajo el dominio en servers/myserver/nodemanager","Bajo el directorio home de NM en myserver","Bajo el dominio en servers/myserver/security","Bajo el dominio en servers/myserver/data/nodemanager","Bajo el directorio home de NM"]},
+    97:{q:"Escalar a nueva máquina. Instalar WebLogic. ¿Tres pasos para crear directorio de dominio?",o:["Usar Asistente para clonar dominio","Ejecutar pack en máquina admin","Transferir certificado de instalación a máquina admin","Transferir plantilla de servidor a nueva máquina","Usar Consola para clonar servidor admin","Ejecutar unpack en nueva máquina"]},
+    98:{q:"Desarrolladores crearon POJOs en JAR. Hacerlo accesible desde todas las apps. ¿Cuatro formas?",o:["Incluir JAR como paquete opcional","Desplegar JAR como EJB","Desplegar JAR como librería compartida","Colocar JAR en carpeta lib del dominio","Desplegar JAR en admin","Añadir JAR al CLASSPATH editando setDomainEnv.sh","Desplegar JAR como otra app web","Desplegar JAR como servicio web"]},
+    99:{q:"Archivos admin restaurados desde backup. Script falla: 'permission denied'. ¿Cómo resolver?",o:["Verificar propiedad y permisos del script de inicio","Asegurarse de iniciar sesión como admin de WebLogic","Detener servidores administrados y luego iniciar admin","Después de restauración, iniciar admin con WLST","Iniciar admin como usuario root"]},
+    100:{q:"¿Tres tareas de la Consola que requieren bloqueo de configuración en producción?",o:["Detener despliegue de aplicación","Crear nuevo origen de datos JDBC","Cambiar puerto de escucha del servidor","Suspender servidor en ejecución","Añadir servidor a clúster existente","Crear nuevo usuario administrativo"]},
+    101:{q:"App con web y EJB. ¿Dos beneficios de multitier vs. single-tier?",o:["Los clústeres dinámicos solo se soportan en multitier","El acceso remoto a EJB está bloqueado","Cada clúster puede escalarse independientemente","Futuros clústeres web pueden compartir el mismo tier EJB","Todos los servidores pueden gestionarse juntos"]},
+    102:{q:"Origen de datos con Inactive Timeout de 60s. Sospechas que la app no devuelve conexiones. ¿Qué columna lo confirma?",o:["State","Active Connections Current Count","Connection Delay Time","Leaked Connection Count","Current Capacity"]},
+    103:{q:"JVM 64-bit. USER_MEM_ARGS='-Xms32meg –Xmx150meg'. Al arrancar falla: 'Invalid initial heap size'. ¿Por qué?",o:["El heap mínimo para 64-bit es 64 Megabytes","Por rendimiento, mínimo y máximo deberían ser iguales","Parámetro incorrecto. Correcto: '-Xms32m –Xmx150m'","Hay que introducir valores en Kilobytes","Parámetro incorrecto. Correcto: '-Xms:32meg – Xmx:150meg'"]},
+    104:{q:"Nuevo servidor necesita almacén JDBC con mensajes JMS. ¿Dos requisitos de configuración?",o:["En Persistent Stores, crear JDBC store y seleccionar 'Usar almacén existente'","Nuevo nombre de dominio igual al anterior","Duplicar config JMS y persistent store en nuevo dominio","Almacenamiento debe ser basado en archivo, no JDBC","Establecer prefijo de tabla JDBC store al nombre del dominio"]},
+    105:{q:"Iniciar servidor administrado. Falla con 'boot identity not valid'. ¿Qué hacer?",o:["Añadir opción para iniciar sin credenciales","Actualizar credenciales en boot identity file","Actualizar credenciales en script de inicio","Crear boot identity con consola admin","El archivo boot identity no existe. Crear uno."]},
+    106:{q:"Instalar WebLogic para desarrollo, pruebas y producción con diferentes requisitos. ¿Cómo implementar?",o:["Crear un dominio con tres clústeres","Crear un dominio con tres admin servers","Crear un dominio con tres servidores administrados","Crear tres dominios"]},
+    107:{q:"Dominio incluye home de NM. ¿Dos escenarios donde no es necesario nmEnroll()?",o:["NM en máquina donde se creó el dominio con el Asistente","Crear plantilla con pack, luego crear dominio con unpack en nueva máquina","Usar consola: seleccionar máquina, Config y pestaña NM","Usar script enrollNodeManager.sh"]},
+    108:{q:"Asistente de Configuración tiene opción de Node Manager. ¿Dos afirmaciones verdaderas?",o:["Hay que introducir usuario y contraseña para acceder a NM","Se puede elegir la ubicación del home de NM","Se puede seleccionar NM basado en Java o en script","Tras el Asistente, inicia automáticamente el NM configurado"]},
+    109:{q:"Los logs aumentaron a 500 MB. ¿Tres técnicas para reducir tamaño?",o:["Aumentar nivel de severidad","Redirigir salida estándar al log","Aumentar tiempo de rotación","Crear y usar filtro de log personalizado","Disminuir tamaño del archivo de rotación"]},
+    110:{q:"Usando LDAP Integrado de Oracle WebLogic. ¿Tres afirmaciones verdaderas?",o:["El LDAP integrado puede ser accedido por visores LDAP externos","El LDAP integrado no puede usarse en producción","El LDAP integrado usa sistema de archivos para almacenar datos de seguridad","El LDAP integrado usa base de datos","El LDAP integrado puede almacenar usuarios, grupos, roles y políticas de seguridad"]},
+    111:{q:"Redesplegar WAR. Usuarios actuales acceden al anterior, nuevos al nuevo. ¿Por qué?",o:["Solo posible si desplegado en clúster","Posible si tiene versiones usando Production Redeployment","No es posible. Al redesplegar, reemplaza el anterior","No es posible. Todos continúan con el anterior hasta salir"]},
+    112:{q:"App desplegada en 12c con nombre diferente al esperado. ¿Qué método tiene precedencia?",o:["Definir nombre en manifest de la librería","Configurar <module-name> en web.xml","Ejecutar weblogic.Deployer con –name","Nombre computado basado en archivo fuente","Elemento <application-name> en application.xml"]},
+    113:{q:"App Java EE usa origen de datos JDBC. ¿Tres pasos que el desarrollador normalmente escribe?",o:["Probar conexión para verificar disponibilidad de la BD","Añadir nueva conexión si no hay disponibles","Cerrar conexión para devolverla al pool","Solicitar conexión del origen de datos","Buscar origen de datos usando nombre JNDI"]},
+    114:{q:"¿Dos afirmaciones verdaderas sobre el rol de WebLogic en gestión de transacciones?",o:["Puedes configurar propiedades JTA a nivel de dominio, clúster y servidor","WebLogic puede actuar como gestor de transacciones para múltiples recursos en transacción distribuida","WebLogic soporta work managers transaccionales","A partir de 12c, se pueden crear clústeres 'estándar' y 'transaccional'","WebLogic soporta Enterprise Java Beans transaccionales"]},
+    115:{q:"¿Dos características del Reconfiguration Wizard?",o:["Puede actualizar cualquier dominio creado con WLS 9.2 y superior","Permite cambiar el modo del dominio","Permite seleccionar diferente JDK Java","No permite reconfigurar orígenes de datos JDBC","Solo puede actualizar dominios con WLS 10.3.x o posterior"]},
+    116:{q:"Crear nuevo dominio sin configurar Listen Address para admin. ¿Qué resultado?",o:["El servidor falla al arrancar","El servidor se vincula a localhost","El servidor solicita dirección al primer arranque","El servidor intenta vincularse a todas las interfaces de red del SO"]},
+    117:{q:"Configurar proveedor LDAP. ¿Tres datos necesarios del administrador LDAP?",o:["Atributo de nombre para objetos de usuario","Tamaño máximo del pool de conexiones","DN base para objetos de grupo","Nombre del realm","Nombre de host y puerto"]},
+    118:{q:"¿Tres capacidades de proveedores LDAP no predeterminados en WebLogic?",o:["Añadir usuario a grupo","Crear nuevo grupo","Cambiar contraseña del usuario","Validar contraseña del usuario","Crear nuevo usuario","Identificar grupos del usuario"]},
+    119:{q:"Nuevo dominio con app EJB. Proxy entre clientes y clúster. ¿Qué atributo del clúster modificar?",o:["Messaging Mode","Cluster Address","Broadcast Channel","Replication Channel","Cluster Type"]},
+    120:{q:"Un miembro del clúster recibe mucho menos carga. ¿Qué métrica de la Consola examinar para determinar si es problema de red?",o:["Primary session count","Drop out frequency","Migration basis","Health state","Current heap size"]},
+    121:{q:"¿Dos afirmaciones verdaderas sobre Log Filters?",o:["No necesitas bloquear configuración para crear Log Filters","Los Log Filters se crean a nivel de dominio","La consola admin ayuda a crear expresiones de Log Filter","Puedes aplicar Log Filter al log del servidor, pero no a la salida estándar"]},
+    122:{q:"¿Dos afirmaciones verdaderas comparando Admin Server con Managed Server?",o:["Admin Server gestiona la configuración del dominio","El dominio debe tener al menos uno de cada tipo","Admin Server mantiene log del dominio, servidor administrado no","Servidor administrado mantiene log del servidor, Admin Server no","Apps Java EE solo se despliegan en servidores administrados"]},
+    123:{q:"Editado setDomainEnv.sh en nodo del admin añadiendo JAR al CLASSPATH. Solo apps de un servidor acceden al JAR. ¿Por qué?",o:["Debes establecer atributo 'CLASSPATH Discovery Enabled'","Cada máquina tiene sus propios directorios de dominio. El script debe modificarse allí también","Solo el primer servidor en recibir nueva config del admin obtiene CLASSPATH actualizado","CLASSPATH es para código interno de WebLogic, no para apps"]},
+    124:{q:"Current Capacity = 10, Current Capacity High Count = 20. ¿Dos explicaciones plausibles?",o:["La carga de trabajo era menor que ahora","El tamaño del cache de sentencias es 20","El tamaño del pool ha aumentado","El tamaño del cache de sentencias es 10","El tamaño del pool ha disminuido","La carga de trabajo era mayor que ahora"]},
+    125:{q:"Clúster de cuatro servidores. Sesión en ServerA replicada en ServerC. ServerA falla. ¿A qué servidor se redirige el usuario?",o:["ServerD","ServerB","Ninguno; el usuario recibirá error","ServerC","Cualquier otro servidor disponible"]},
+    126:{q:"Crear clúster dinámico. ¿Tres configuraciones soportadas para distribuir servidores?",o:["Usar todas las máquinas del dominio","Usar máquinas cuyo nombre coincida con expresión","Usar porcentaje de máquinas del dominio","Usar todas las máquinas en subred","Usar una sola máquina"]},
+    127:{q:"Dominio con Machine Name Match Expression='host1*'. ¿Qué máquinas se usarán (host01, host02, host11, host12)?",o:["host01 y host11 únicamente","host11 y host12 únicamente","host11 únicamente","todas las máquinas","la máquina predeterminada del dominio","host01 únicamente"]}
+  };
+  if(!T[questionNum])return type==='question'?'':[];
+  if(type==='question')return T[questionNum].q||'';
+  else if(type==='option')return T[questionNum].o||[];
+  return'';
+}
+
+function selectOption(index){
+  const question=questions[currentQuestion];
+  const questionId=question.number;
+  if(checkedQuestions[questionId])return;
+  
+  const isMultiple=question.correct.length>1;
+  if(!answers[questionId])answers[questionId]=[];
+  
+  if(isMultiple){
+    const answerIndex=answers[questionId].indexOf(index);
+    if(answerIndex>-1)answers[questionId].splice(answerIndex,1);
+    else answers[questionId].push(index);
+  }else{
+    answers[questionId]=[index];
+  }
+  
+  loadQuestion();
+}
+
+function _baseCheckanswer(){
+  const question=questions[currentQuestion];
+  const questionId=question.number;
+  const userAnswer=answers[questionId];
+  
+  if(!userAnswer||userAnswer.length===0)return;
+  
+  checkedQuestions[questionId]=true;
+  
+  const isCorrect=userAnswer.length===question.correct.length&&userAnswer.every(ans=>question.correct.includes(ans));
+  if(isCorrect)correctCount++;
+  else incorrectCount++;
+  
+  loadQuestion();
+}
+
+function _baseNextQuestionV12(){
+  if(currentQuestion===questions.length-1)showResults();
+  else{currentQuestion++;loadQuestion();}
+}
+
+function previousQuestion(){
+  if(currentQuestion>0){currentQuestion--;loadQuestion();}
+}
+
+function updateProgress(){
+  const progress=((currentQuestion+1)/questions.length)*100;
+  document.getElementById('progressFill').style.width=progress+'%';
+}
+
+function _baseShowresults(){
+  const percentage=Math.round((correctCount/questions.length)*100);
+  let message='',emoji='';
+  if(percentage>=90){message='¡Excelente! Dominas el material.';emoji='🏆';}
+  else if(percentage>=70){message='¡Buen trabajo! Sigue estudiando.';emoji='👍';}
+  else if(percentage>=50){message='Bien, pero necesitas más práctica.';emoji='📚';}
+  else{message='Sigue estudiando. ¡Tú puedes!';emoji='💪';}
+  
+  const html=`<div class="final-results"><div style="font-size:64px;margin-bottom:20px;">${emoji}</div><h2>Resultados Finales</h2><div class="final-score">${correctCount} / ${questions.length}</div><div style="font-size:32px;color:#667eea;margin:20px 0;">${percentage}%</div><p style="font-size:18px;color:#666;margin-bottom:30px;">${message}</p><div style="display:flex;justify-content:center;gap:30px;margin:30px 0;"><div><div style="color:#10b981;font-size:36px;font-weight:bold;">${correctCount}</div><div style="color:#666;">Correctas</div></div><div><div style="color:#ef4444;font-size:36px;font-weight:bold;">${incorrectCount}</div><div style="color:#666;">Incorrectas</div></div><div><div style="color:#6b7280;font-size:36px;font-weight:bold;">${questions.length-correctCount-incorrectCount}</div><div style="color:#666;">Sin responder</div></div></div><button class="restart-btn" onclick="restartQuiz()">🔄 Reiniciar Quiz</button><button class="restart-btn" onclick="location.reload()" style="background:#6b7280;margin-left:10px">⚙️ Nueva Configuración</button></div>`;
+  
+  document.getElementById('quizContent').innerHTML=html;
+  document.getElementById('progressFill').style.width='100%';
+  
+  // Limpiar progreso guardado al terminar
+  localStorage.removeItem('oracleQuizProgress');
+}
+
+function restartQuiz(){
+  currentQuestion=0;
+  answers={};
+  checkedQuestions={};
+  correctCount=0;
+  incorrectCount=0;
+  localStorage.removeItem('oracleQuizProgress');
+  loadQuestion();
+}
+
+// ==========================================
+// NUEVAS FUNCIONALIDADES INTEGRADAS
+// ==========================================
+let quizMode='practice',examMode=false,timerInterval=null,startTime=null;
+let currentStreak=0,bookmarkedQuestions=new Set(),historicallyIncorrect=new Set();
+const shownAchievements=new Set();
+
+function toggleDarkMode(){
+  document.body.classList.toggle('dark-mode');
+  const b=document.querySelector('.dark-mode-toggle');
+  if(b)b.textContent=document.body.classList.contains('dark-mode')?'☀️ Modo Claro':'🌙 Modo Oscuro';
+  localStorage.setItem('darkMode',document.body.classList.contains('dark-mode'));
+}
+
+function selectMode(mode,e){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('selected'));
+  e.currentTarget.classList.add('selected');quizMode=mode;
+}
+
+function startTimer(){
+  startTime=Date.now();
+  timerInterval=setInterval(()=>{
+    const e=Math.floor((Date.now()-startTime)/1000);
+    const h=Math.floor(e/3600),m=Math.floor((e%3600)/60),s=e%60;
+    const td=document.getElementById('timerDisplay');
+    if(td)td.textContent='⏱️ '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  },1000);
+}
+
+function stopTimer(){clearInterval(timerInterval);return startTime?Math.floor((Date.now()-startTime)/1000):0;}
+
+function loadHistoricalData(){
+  const s=localStorage.getItem('oracleQuizHistory');
+  if(s){const d=JSON.parse(s);historicallyIncorrect=new Set(d.incorrect||[]);bookmarkedQuestions=new Set(d.bookmarked||[]);}
+}
+
+function saveHistoricalData(){
+  localStorage.setItem('oracleQuizHistory',JSON.stringify({incorrect:Array.from(historicallyIncorrect),bookmarked:Array.from(bookmarkedQuestions)}));
+}
+
+function getAttemptHistory(){const s=localStorage.getItem('oracleQuizAttempts');return s?JSON.parse(s):[];}
+
+function saveAttempt(score,total,time){
+  const a=getAttemptHistory();
+  a.push({date:new Date().toISOString(),score,total,percentage:Math.round((score/total)*100),timeSpent:time});
+  localStorage.setItem('oracleQuizAttempts',JSON.stringify(a));
+}
+
+function saveNote(qNum){
+  const text=document.getElementById('note-'+qNum)?.value||'';
+  const notes=JSON.parse(localStorage.getItem('oracleQuizNotes')||'{}');
+  notes[qNum]=text;localStorage.setItem('oracleQuizNotes',JSON.stringify(notes));
+  showPopup('📝 Nota guardada','Tu apunte se guardó correctamente');
+}
+
+function getNote(qNum){return JSON.parse(localStorage.getItem('oracleQuizNotes')||'{}')[qNum]||'';}
+
+function updateDifficulty(qNum,ok){
+  const h=JSON.parse(localStorage.getItem('oracleQuizDifficulty')||'{}');
+  if(!h[qNum])h[qNum]={correct:0,total:0};
+  h[qNum].total++;if(ok)h[qNum].correct++;
+  localStorage.setItem('oracleQuizDifficulty',JSON.stringify(h));
+}
+
+function getDifficultyBadge(qNum){
+  const d=JSON.parse(localStorage.getItem('oracleQuizDifficulty')||'{}')[qNum];if(!d)return'';
+  const r=d.correct/d.total;
+  if(r>=0.7)return'<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:#d1fae5;color:#065f46;margin-left:8px">🟢 Fácil</span>';
+  if(r>=0.4)return'<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:#fef3c7;color:#92400e;margin-left:8px">🟡 Media</span>';
+  return'<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:#fee2e2;color:#991b1b;margin-left:8px">🔴 Difícil</span>';
+}
+
+const ACHIEVEMENTS=[
+  {id:'f1',icon:'🥇',title:'¡Primera Correcta!',desc:'Respondiste tu primera pregunta correctamente',check:(c,i,s)=>c===1&&i===0},
+  {id:'s5',icon:'🔥',title:'¡En Racha!',desc:'5 respuestas correctas seguidas',check:(c,i,s)=>s===5},
+  {id:'s10',icon:'💥',title:'¡Imparable!',desc:'10 respuestas correctas seguidas',check:(c,i,s)=>s===10},
+  {id:'p10',icon:'💯',title:'¡Perfecto!',desc:'10 correctas sin ningún error',check:(c,i,s)=>c===10&&i===0},
+];
+
+function checkAchievements(ok){
+  if(ok)currentStreak++;else currentStreak=0;
+  ACHIEVEMENTS.forEach(a=>{
+    if(!shownAchievements.has(a.id)&&a.check(correctCount,incorrectCount,currentStreak)){
+      shownAchievements.add(a.id);showPopup(a.icon+' '+a.title,a.desc);
+    }
+  });
+}
+
+function showPopup(title,desc){
+  const old=document.querySelector('.ach-popup');if(old)old.remove();
+  const p=document.createElement('div');p.className='ach-popup';
+  p.style.cssText='position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:15px 20px;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,0.3);z-index:9999;max-width:280px';
+  p.innerHTML='<strong style="display:block;margin-bottom:4px">'+title+'</strong><span style="font-size:12px;opacity:0.9">'+desc+'</span>';
+  document.body.appendChild(p);
+  setTimeout(()=>{p.style.transition='opacity 0.5s';p.style.opacity='0';setTimeout(()=>p.remove(),500);},3000);
+}
+
+function getMotivation(){
+  const msgs=['💪 ¡Tú puedes! Cada pregunta te acerca a tu certificación.','🚀 El éxito está en la práctica constante.','🧠 Entender es mejor que memorizar.','⚡ ¡La certificación Oracle 1z0-133 te espera!','🎯 ¡Cada error es una oportunidad de aprender!'];
+  const a=getAttemptHistory();
+  const days=a.length>0?Math.floor((Date.now()-new Date(a[0].date))/(86400000))+1:1;
+  return'<div style="padding:10px 15px;border-radius:10px;margin-bottom:15px;text-align:center;font-weight:600;font-size:13px;background:#f0f4ff;color:#667eea;border:1px solid #c7d2fe">'+msgs[Math.floor(Math.random()*msgs.length)]+' | 📅 Día '+days+' de estudio</div>';
+}
+
+function toggleBookmark(qNum){
+  if(bookmarkedQuestions.has(qNum))bookmarkedQuestions.delete(qNum);
+  else bookmarkedQuestions.add(qNum);
+  saveHistoricalData();loadQuestion();
+}
+
+function getProgressChart(){
+  const a=getAttemptHistory();
+  if(a.length<2)return'<p style="color:#888;padding:20px;text-align:center">Necesitas al menos 2 intentos para ver la gráfica 📈</p>';
+  const last=a.slice(-10);const bw=Math.min(45,Math.floor(500/last.length));
+  let bars='',labels='';
+  last.forEach(x=>{
+    const h=Math.round((x.percentage/100)*140);
+    const c=x.percentage>=70?'#10b981':x.percentage>=50?'#f59e0b':'#ef4444';
+    bars+='<div style="display:inline-block;height:'+h+'px;width:'+bw+'px;background:'+c+';border-radius:4px 4px 0 0;margin:0 3px;vertical-align:bottom" title="'+x.percentage+'%"></div>';
+    labels+='<span style="display:inline-block;width:'+(bw+6)+'px;text-align:center;font-size:10px;color:#888">'+x.percentage+'%</span>';
+  });
+  return'<div style="width:100%;margin:15px 0"><div style="display:flex;align-items:flex-end;justify-content:center;height:150px;border-bottom:2px solid #e0e0e0;padding:0 10px">'+bars+'</div><div style="text-align:center;margin-top:5px">'+labels+'</div></div>';
+}
+
+function quickReview(){
+  loadHistoricalData();
+  const list=Array.from(historicallyIncorrect);
+  if(list.length===0){alert('🎉 ¡No tienes preguntas incorrectas! ¡Excelente!');return;}
+  let html='<div style="padding:30px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:#667eea">🎯 Repaso Rápido</h2><button onclick="location.reload()" style="padding:10px 20px;background:#667eea;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600">← Volver</button></div><p style="color:#888;margin-bottom:20px">Tienes <strong>'+list.length+'</strong> preguntas incorrectas para repasar:</p>';
+  list.forEach(n=>{
+    const q=allQuestions.find(x=>x.number===n);if(!q)return;
+    const ans=q.correct.map(i=>'<strong>'+String.fromCharCode(65+i)+')</strong> '+q.options[i]).join('<br>');
+    html+='<div style="padding:20px;border-radius:12px;margin-bottom:15px;border-left:5px solid #ef4444;background:#fff5f5"><div style="font-size:14px;font-weight:600;margin-bottom:10px">P'+q.number+': '+q.text+'</div><div style="font-size:13px;color:#10b981;font-weight:600">✅ Respuesta correcta:<br>'+ans+'</div></div>';
+  });
+  html+='</div>';
+  document.getElementById('configPanel').classList.add('hidden');
+  document.getElementById('progressBar').classList.add('hidden');
+  document.getElementById('quizContent').classList.remove('hidden');
+  document.getElementById('quizContent').innerHTML=html;
+}
+
+function viewStats(){
+  loadHistoricalData();
+  const a=getAttemptHistory();
+  if(a.length===0){alert('📊 Aún no tienes intentos. ¡Completa tu primer quiz!');return;}
+  const avg=Math.round(a.reduce((s,x)=>s+x.percentage,0)/a.length);
+  const best=Math.max(...a.map(x=>x.percentage));
+  const worst=Math.min(...a.map(x=>x.percentage));
+  let html='<div style="padding:40px;text-align:center"><h2 style="color:#667eea;margin-bottom:20px">📊 Estadísticas Históricas</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px">';
+  [['#667eea',a.length,'Intentos'],['#667eea',avg+'%','Promedio'],['#10b981',best+'%','Mejor'],['#ef4444',worst+'%','Peor'],['#f59e0b',historicallyIncorrect.size,'Difíciles'],['#8b5cf6',bookmarkedQuestions.size,'Marcadas']].forEach(([c,v,l])=>{
+    html+='<div style="padding:15px;border-radius:10px;background:#f8f9ff"><div style="font-size:26px;font-weight:bold;color:'+c+'">'+v+'</div><div style="font-size:12px;color:#666">'+l+'</div></div>';
+  });
+  html+='</div><h3 style="margin:10px 0;color:#667eea">📈 Evolución de Puntuaciones</h3>'+getProgressChart()+'<h3 style="margin:15px 0 10px;color:#667eea">Últimos 5 Intentos</h3>';
+  a.slice(-5).reverse().forEach((x,i)=>{
+    const c=x.percentage>=70?'#10b981':x.percentage>=50?'#f59e0b':'#ef4444';
+    html+='<div style="padding:12px 15px;margin:6px 0;background:#f8f9ff;border-radius:8px;display:flex;justify-content:space-between;align-items:center"><span><strong>Intento '+(a.length-i)+'</strong> · '+new Date(x.date).toLocaleDateString()+'</span><span style="color:'+c+';font-weight:bold;font-size:16px">'+x.percentage+'% ('+x.score+'/'+x.total+')</span></div>';
+  });
+  html+='<div style="display:flex;gap:10px;justify-content:center;margin-top:25px;flex-wrap:wrap"><button onclick="location.reload()" style="padding:12px 25px;background:#6b7280;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer">← Volver</button><button onclick="quickReview()" style="padding:12px 25px;background:#f59e0b;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer">🎯 Repaso Rápido</button><button onclick="exportResults()" style="padding:12px 25px;background:#3b82f6;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer">📄 Exportar</button></div></div>';
+  document.getElementById('configPanel').classList.add('hidden');
+  document.getElementById('progressBar').classList.add('hidden');
+  document.getElementById('quizContent').classList.remove('hidden');
+  document.getElementById('quizContent').innerHTML=html;
+}
+
+function exportResults(){
+  const a=getAttemptHistory();
+  let t='ORACLE 1Z0-133 - HISTORIAL DE RESULTADOS\n===========================================\n\n';
+  a.forEach((x,i)=>{t+='Intento '+(i+1)+': '+new Date(x.date).toLocaleString()+'\nPuntuación: '+x.score+'/'+x.total+' ('+x.percentage+'%)\n\n';});
+  const blob=new Blob([t],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const el=document.createElement('a');el.href=url;el.download='oracle-quiz-resultados.txt';el.click();
+}
+
+// HOOKS - se ejecutan DESPUÉS de las funciones originales
+
+function startQuiz(cont){
+  loadHistoricalData();
+  examMode=(quizMode==='exam');
+  _baseStartQuiz(cont);
+
+  // Aplicar filtros especiales después de cargar preguntas del rango
+  const onlyIncorrect=document.getElementById('onlyIncorrect')?.checked||false;
+  const onlyBookmarked=document.getElementById('onlyBookmarked')?.checked||false;
+  if(onlyIncorrect){
+    questions=questions.filter(q=>historicallyIncorrect.has(q.number));
+    if(questions.length===0){alert('🎉 ¡No tienes preguntas incorrectas! ¡Excelente!');location.reload();return;}
+  }
+  if(onlyBookmarked){
+    questions=questions.filter(q=>bookmarkedQuestions.has(q.number));
+    if(questions.length===0){alert('📌 No has marcado ninguna pregunta todavía.');location.reload();return;}
+  }
+
+  if(examMode){const td=document.getElementById('timerDisplay');if(td){td.classList.remove('hidden');startTimer();}}
+  currentQuestion=0;
+  loadQuestion();
+}
+
+
+function loadQuestion(){
+  _baseLoadquestion();
+  const q=questions[currentQuestion];if(!q)return;
+  const qc=document.getElementById('quizContent');
+  const qn=qc.querySelector('.question-number');
+  if(qn){
+    qn.innerHTML+=getDifficultyBadge(q.number);
+    const bm=bookmarkedQuestions.has(q.number);
+    const bmBtn=document.createElement('button');
+    bmBtn.style.cssText='background:'+(bm?'#10b981':'#fbbf24')+';color:'+(bm?'white':'#1a1a1a')+';border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;margin-left:8px';
+    bmBtn.textContent=bm?'⭐ Marcada':'📌 Marcar';
+    bmBtn.onclick=()=>toggleBookmark(q.number);
+    qn.appendChild(bmBtn);
+  }
+  if(currentQuestion===0){const sb=qc.querySelector('.score-board');if(sb)sb.insertAdjacentHTML('beforebegin',getMotivation());}
+  if(examMode){
+    const sb=qc.querySelector('.score-board');
+    if(sb)sb.insertAdjacentHTML('beforebegin','<div style="background:#fef3c7;border:2px solid #f59e0b;color:#92400e;padding:12px;border-radius:10px;text-align:center;font-weight:600;margin-bottom:15px">🎯 MODO EXAMEN: Puedes revisar preguntas anteriores ya respondidas, pero no cambiar las respuestas verificadas</div>');
+    const pb=qc.querySelector('.btn-prev');
+    if(pb){
+      // Solo permitir retroceder si hay preguntas anteriores ya respondidas o verificadas
+      const canGoBack=currentQuestion>0;
+      pb.disabled=!canGoBack;
+      if(canGoBack){
+        pb.style.background='#6b7280';
+        pb.title='Volver a revisar pregunta anterior';
+      }
+    }
+  }
+  const ctrl=qc.querySelector('.controls');
+  if(ctrl){
+    const note=getNote(q.number);
+    ctrl.insertAdjacentHTML('beforebegin','<div style="margin-top:15px;padding:15px;border-radius:10px;border:2px dashed #667eea;background:#f8f9ff"><div style="font-size:12px;font-weight:600;color:#667eea;margin-bottom:6px">📝 Mi Nota Personal:</div><textarea id="note-'+q.number+'" style="width:100%;padding:8px;border:1px solid #e0e0e0;border-radius:6px;font-size:12px;resize:vertical;min-height:50px;font-family:inherit" placeholder="Escribe tus apuntes sobre esta pregunta...">'+note+'</textarea><button onclick="saveNote('+q.number+')" style="background:#667eea;color:white;border:none;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-top:5px">💾 Guardar Nota</button></div>');
+  }
+}
+
+
+function _baseCheckAnswerV12(){
+  const q=questions[currentQuestion];
+  const ua=answers[q.number];if(!ua||ua.length===0)return;
+  const ok=ua.length===q.correct.length&&ua.every(a=>q.correct.includes(a));
+  _baseCheckanswer();
+  updateDifficulty(q.number,ok);checkAchievements(ok);
+  if(ok)historicallyIncorrect.delete(q.number);else historicallyIncorrect.add(q.number);
+  saveHistoricalData();
+}
+
+
+function _baseShowResultsV12(){
+  const t=examMode?stopTimer():0;
+  _baseShowresults();
+  saveAttempt(correctCount,questions.length,t);
+  if(examMode){const td=document.getElementById('timerDisplay');if(td)td.classList.add('hidden');}
+  const fr=document.querySelector('.final-results');
+  if(fr){
+    if(t>0){const td=document.createElement('div');td.style.cssText='font-size:18px;color:#667eea;margin:10px 0';td.innerHTML='⏱️ Tiempo: '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');const fs=fr.querySelector('.final-score');if(fs)fs.insertAdjacentElement('afterend',td);}
+    if(historicallyIncorrect.size>0){const btn=document.createElement('button');btn.style.cssText='background:#f59e0b;color:white;border:none;padding:12px 25px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;display:block;margin-left:auto;margin-right:auto';btn.innerHTML='🎯 Repasar '+historicallyIncorrect.size+' Incorrectas';btn.onclick=quickReview;fr.appendChild(btn);}
+  }
+}
+
+
+
+// Cargar progreso al iniciar si existe
+window.addEventListener('load',()=>{
+  loadHistoricalData();
+  if(localStorage.getItem('darkMode')==='true'){
+    document.body.classList.add('dark-mode');
+    const btn=document.querySelector('.dark-mode-toggle');
+    if(btn)btn.textContent='☀️ Modo Claro';
+  }
+  const saved=localStorage.getItem('oracleQuizProgress');
+  if(saved){
+    document.getElementById('continueBtn').style.display='inline-block';
+    // Si había una sesión activa, restaurarla automáticamente con F5
+    const data=JSON.parse(saved);
+    if(data.quizActive){
+      restoreSession();
+    }
+  }
+});
+
+// Restaurar sesión cuando el usuario pulsa "Continuar donde quedé" o con F5
+function restoreSession(){
+  const saved=localStorage.getItem('oracleQuizProgress');
+  if(!saved)return;
+  try{
+    const data=JSON.parse(saved);
+    quizMode=data.savedQuizMode||'practice';
+    examMode=data.savedExamMode||false;
+    if(data.savedQuestionNumbers&&data.savedQuestionNumbers.length>0){
+      questions=data.savedQuestionNumbers.map(n=>allQuestions.find(q=>q.number===n)).filter(Boolean);
